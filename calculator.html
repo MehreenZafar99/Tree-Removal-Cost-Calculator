@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tree Removal Cost Calculator</title>
+  <meta name="description" content="Estimate tree removal costs instantly. Enter tree type, height, trunk diameter, access difficulty, stump removal, and conditions to get a real-time estimate." />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root{
+      --bg: #EAFBF3;
+      --card: #ffffff;
+      --muted: #4b5563;
+      --text: #0f172a;
+      --brand: #16a34a;
+      --brand2:#10b981;
+      --border:#e5e7eb;
+      --shadow: 0 20px 40px rgba(2,6,23,.08);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap{
+      max-width:1100px;
+      margin:48px auto;
+      padding:0 16px 64px;
+    }
+    p, li {
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:32px;
+  box-shadow:0 25px 50px rgba(2,6,23,.08);
+  border:1px solid rgba(15,23,42,.06);
+}
+section.card + section.card {
+  margin-top: 36px;
+}
+
+    
+    h1{
+      font-size:28px;
+      margin-bottom:6px;
+    }
+    .sub{
+  color:#475569;
+  font-size:15px;
+  line-height:1.6;
+  max-width:70ch;
+}
+    
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+    @media(max-width:900px){
+      .grid{grid-template-columns:1fr;}
+    }
+    label{
+      font-weight:600;
+      margin-bottom:6px;
+      display:block;
+    }
+    select,input[type="text"]{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+    }
+    input[type="range"]{
+      width:100%;
+      accent-color:var(--brand2);
+    }
+    .value{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    .checks{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .checkRow{
+      display:flex;
+      gap:10px;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+    .result{
+      margin-top:20px;
+      padding:18px;
+      border-radius:16px;
+      background:rgba(16,185,129,.08);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border:1px solid rgba(16,185,129,.25);
+    }
+    .price{
+      font-size:34px;
+      font-weight:800;
+      color:#0b5;
+    }
+    .breakdown{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .item{
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      font-size:13px;
+    }
+    h1 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+  </style>
+</head>
+
+<body>
+<main class="wrap">
+<section class="card">
+<h1>Calculate Your Tree Removal Cost</h1>
+<p class="sub">Instant price estimate based on tree size, access difficulty, location, and optional stump removal.</p>
+
+<div class="grid">
+
+<div>
+<label>Tree Type</label>
+<select id="treeType">
+<option value="oak">Oak</option>
+<option value="pine">Pine</option>
+<option value="palm">Palm</option>
+<option value="maple">Maple</option>
+<option value="other">Other</option>
+</select>
+</div>
+
+<div>
+<label>ZIP Code</label>
+<input id="zip" type="text" placeholder="Optional">
+</div>
+
+<div>
+<label>Tree Height (ft)</label>
+<input id="height" type="range" min="10" max="120" value="30">
+<div class="value" id="heightVal">30 ft</div>
+</div>
+
+<div>
+<label>Trunk Diameter (inches)</label>
+<input id="diameter" type="range" min="4" max="60" value="24">
+<div class="value" id="diameterVal">24 inches</div>
+</div>
+
+<div>
+<label>Accessibility</label>
+<select id="access">
+<option value="easy">Easy</option>
+<option value="moderate">Moderate</option>
+<option value="difficult">Difficult</option>
+</select>
+</div>
+
+<div>
+<label>Additional Services</label>
+<div class="checks">
+<div class="checkRow">
+<input type="checkbox" id="powerLines">
+<div>Near power lines</div>
+</div>
+<div class="checkRow">
+<input type="checkbox" id="emergency">
+<div>Emergency removal</div>
+</div>
+<div class="checkRow">
+<input type="checkbox" id="stump">
+<div>Include stump removal</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="result">
+<div>
+<b>Estimated Cost</b>
+<div class="value">Final price confirmed after inspection</div>
+</div>
+<div class="price" id="price">$—</div>
+</div>
+
+<div class="breakdown">
+<div class="item">
+<b>Base Size Cost</b>
+<div id="bdBase">$—</div>
+</div>
+<div class="item">
+<b>Multipliers & Extras</b>
+<div id="bdMult">—</div>
+</div>
+</div>
+
+</section>
+<section class="card" style="margin-top:40px;">
+  <h2>How This Tree Removal Estimate Is Built</h2>
+  <p class="sub">
+    This calculator doesn’t guess a random number. It uses a layered pricing approach
+    similar to how professional tree services think about a job.
+  </p>
+
+  <div class="breakdown">
+    <div class="item">
+      <b>1. Physical Tree Size</b>
+      <p>
+        Height and trunk diameter influence cutting time, crew size, and equipment.
+        Larger trees require sectional removal and controlled rigging.
+      </p>
+    </div>
+
+    <div class="item">
+      <b>2. Access & Risk Level</b>
+      <p>
+        Tight spaces, nearby structures, power lines, or limited access increase labor
+        and safety planning requirements.
+      </p>
+    </div>
+
+    <div class="item">
+      <b>3. Optional Services</b>
+      <p>
+        Emergency removal and stump grinding are priced separately so you can see
+        exactly what adds to the total.
+      </p>
+    </div>
+
+    <div class="item">
+      <b>4. Regional Cost Patterns</b>
+      <p>
+        Labor rates, disposal fees, and operating costs vary by location. ZIP-based
+        adjustments help reflect national pricing differences.
+      </p>
+    </div>
+  </div>
+</section>
+<section class="card" style="margin-top:28px;">
+  <h2>Why Tree Removal Prices Can Vary So Much</h2>
+  <p class="sub">
+    Two trees can look similar and still cost very different amounts to remove.
+    Here’s why that happens.
+  </p>
+
+  <ul>
+    <li><b>Rigging complexity:</b> Trees over homes, fences, or pools require controlled dismantling.</li>
+    <li><b>Equipment needs:</b> Some jobs require cranes, bucket trucks, or additional crew members.</li>
+    <li><b>Tree condition:</b> Dead or storm-damaged trees can be more dangerous to climb.</li>
+    <li><b>Local rules:</b> Permits, disposal regulations, and HOA requirements can add time and cost.</li>
+  </ul>
+
+  <p class="sub">
+    This is why professional estimates are usually provided as ranges until a site
+    inspection confirms the details.
+  </p>
+</section>
+<section class="card" style="margin-top:28px; background:#f8fffb;">
+  <h2>What This Calculator Is (and Isn’t)</h2>
+
+  <p><b>✔ What it is:</b></p>
+  <ul>
+    <li>A realistic cost range based on national averages and common job factors</li>
+    <li>A planning tool to help you budget and compare options</li>
+    <li>A transparent breakdown of what affects pricing</li>
+  </ul>
+
+  <p><b>✖ What it isn’t:</b></p>
+  <ul>
+    <li>An exact invoice or contractor quote</li>
+    <li>A replacement for an onsite safety inspection</li>
+    <li>A one-size-fits-all price promise</li>
+  </ul>
+
+  <p class="sub">
+    Final pricing is always confirmed by a licensed professional after evaluating
+    site-specific conditions.
+  </p>
+</section>
+
+</main>
+
+<script>
+const els = {
+  treeType: document.getElementById("treeType"),
+  zip: document.getElementById("zip"),
+  height: document.getElementById("height"),
+  diameter: document.getElementById("diameter"),
+  heightVal: document.getElementById("heightVal"),
+  diameterVal: document.getElementById("diameterVal"),
+  access: document.getElementById("access"),
+  powerLines: document.getElementById("powerLines"),
+  emergency: document.getElementById("emergency"),
+  stump: document.getElementById("stump"),
+  price: document.getElementById("price"),
+  bdBase: document.getElementById("bdBase"),
+  bdMult: document.getElementById("bdMult")
+};
+
+function regionFactor(zip){
+  if(!zip) return 1;
+  const d = zip[0];
+  if(["0","1"].includes(d)) return 1.12;
+  if(["8","9"].includes(d)) return 1.15;
+  return 1;
+}
+
+function calc(){
+  const h = +els.height.value;
+  const d = +els.diameter.value;
+  els.heightVal.textContent = h+" ft";
+  els.diameterVal.textContent = d+" inches";
+
+  let base = 150 + (h*9) + (d*14);
+  if(h>60) base+=200;
+  if(d>36) base+=200;
+
+  let mult = 1;
+  mult *= els.access.value==="moderate"?1.25:els.access.value==="difficult"?1.6:1;
+  if(els.powerLines.checked) mult*=1.18;
+  if(els.emergency.checked) mult*=1.3;
+  mult *= regionFactor(els.zip.value);
+
+  let stumpCost = els.stump.checked ? 80 + (d*4) : 0;
+
+  let low = (base*mult + stumpCost)*0.85;
+  let high = (base*mult + stumpCost)*1.2;
+
+  els.price.textContent = `$${Math.round(low)} – $${Math.round(high)}`;
+  els.bdBase.textContent = "$"+Math.round(base);
+  els.bdMult.textContent = "×"+mult.toFixed(2)+(stumpCost?` + stump $${Math.round(stumpCost)}`:"");
+}
+
+document.querySelectorAll("input,select").forEach(el=>{
+  el.addEventListener("input",calc);
+  el.addEventListener("change",calc);
+});
+calc();
+</script>
+</body>
+</html>
